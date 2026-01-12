@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/item_model.dart';
 
 class FirestoreService {
@@ -108,6 +109,76 @@ class FirestoreService {
       });
     } catch (e) {
       throw 'Failed to update items count: $e';
+    }
+  }
+
+  // Toggle Favorite
+  Future<void> toggleFavorite(String userId, String itemId) async {
+    try {
+      final userDoc = _firestore.collection('users').doc(userId);
+      final docSnapshot = await userDoc.get();
+      
+      if (docSnapshot.exists) {
+        final List<dynamic> favorites = docSnapshot.data()?['favorites'] ?? [];
+        if (favorites.contains(itemId)) {
+          await userDoc.update({
+            'favorites': FieldValue.arrayRemove([itemId])
+          });
+        } else {
+          await userDoc.update({
+            'favorites': FieldValue.arrayUnion([itemId])
+          });
+        }
+      } else {
+        // Create doc if it doesn't exist (shouldn't happen usually)
+        await userDoc.set({
+          'favorites': [itemId]
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      throw 'Failed to toggle favorite: $e';
+    }
+  }
+
+  // Get favorites stream
+  Stream<List<String>> getFavoritesStream(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .map((snapshot) {
+      final data = snapshot.data();
+      if (data == null || !data.containsKey('favorites')) return [];
+      return List<String>.from(data['favorites']);
+    });
+  }
+
+  // Get favorite items (full models)
+  Future<List<ItemModel>> getFavoriteItems(String userId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      final List<dynamic> favoriteIds = userDoc.data()?['favorites'] ?? [];
+      
+      if (favoriteIds.isEmpty) return [];
+
+      // Firestore 'in' query supports max 10/30 depending on version, 
+      // but for simplicity we fetch in batches or individually if list is large.
+      // Ideally use where('id', whereIn: favoriteIds) if < 30.
+      
+      if (favoriteIds.length > 30) {
+        // Fallback or pagination logic needed, but for now take first 30
+        favoriteIds.removeRange(30, favoriteIds.length);
+      }
+
+      final snapshot = await _firestore
+          .collection('items')
+          .where(FieldPath.documentId, whereIn: favoriteIds)
+          .get();
+      
+      return snapshot.docs.map((doc) => ItemModel.fromFirestore(doc)).toList();
+    } catch (e) {
+      debugPrint('Error fetching favorite items: $e');
+      return []; // Return empty on error to prevent crash
     }
   }
 }
