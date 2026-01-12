@@ -318,159 +318,159 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withOpacity(0.8),
+                    color,
+                  ],
+                ),
+              ),
               child: Stack(
                 children: [
-                   // Content
-                   Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            color.withOpacity(0.8),
-                            color,
-                          ],
+                  // Content
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (distanceText != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.location_on, size: 16, color: Colors.white),
+                                const SizedBox(width: 4),
+                                Text(
+                                  distanceText!,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 200.ms),
+                      Icon(
+                        icon,
+                        size: 120,
+                        color: Colors.white,
+                      )
+                          .animate(onPlay: (controller) => controller.repeat())
+                          .shimmer(duration: 2000.ms, delay: 1000.ms)
+                          .shake(hz: 0.5, curve: Curves.easeInOutCubic),
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (distanceText != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16.0),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.location_on, size: 16, color: Colors.white),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      distanceText!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ).animate().fadeIn(delay: 200.ms),
-                          Icon(
-                            icon,
-                            size: 120,
-                            color: Colors.white,
-                          )
-                              .animate(onPlay: (controller) => controller.repeat())
-                              .shimmer(duration: 2000.ms, delay: 1000.ms)
-                              .shake(hz: 0.5, curve: Curves.easeInOutCubic),
-                          const SizedBox(height: 24),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              item.title,
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '₹${item.rentalPricePerDay.toInt()}/day',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white70,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => BookingScreen(item: item),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: color,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: const Text(
-                              'Rent Now',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ).animate().fadeIn(delay: 300.ms).scale(),
-                        ],
+                      const SizedBox(height: 8),
+                      Text(
+                        '₹${item.rentalPricePerDay.toInt()}/day',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white70,
+                        ),
                       ),
-                    ),
-                    
-                    // Favorite Icon
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Consumer(
-                        builder: (context, ref, child) {
-                          final favorites = ref.watch(userFavoritesProvider).value ?? [];
-                          final isFavorite = favorites.contains(item.id);
-                          final currentUser = ref.watch(currentUserProvider);
-
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black12,
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                isFavorite ? Icons.favorite : Icons.favorite_border,
-                                color: isFavorite ? Colors.red : Colors.white,
-                                size: 28,
-                              ),
-                              onPressed: () async {
-                                if (currentUser == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Please login to manage favorites')),
-                                  );
-                                  return;
-                                }
-                                try {
-                                  await ref.read(firestoreServiceProvider).toggleFavorite(currentUser.uid, item.id);
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: $e')),
-                                    );
-                                  }
-                                }
-                              },
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingScreen(item: item),
                             ),
                           );
                         },
-                      ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: color,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          'Rent Now',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ).animate().fadeIn(delay: 300.ms).scale(),
+                    ],
+                  ),
+
+                  // Favorite Icon - Now inside the colored container
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        final favorites = ref.watch(userFavoritesProvider).value ?? [];
+                        final isFavorite = favorites.contains(item.id);
+                        final currentUser = ref.watch(currentUserProvider);
+
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black12,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              isFavorite ? Icons.favorite : Icons.favorite_border,
+                              color: isFavorite ? Colors.red : Colors.white,
+                              size: 24, // Smaller size
+                            ),
+                            onPressed: () async {
+                              if (currentUser == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Please login to manage favorites')),
+                                );
+                                return;
+                              }
+                              try {
+                                await ref.read(firestoreServiceProvider).toggleFavorite(currentUser.uid, item.id);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        );
+                      },
                     ),
+                  ),
                 ],
               ),
+            ),
           ),
         ),
       ),
